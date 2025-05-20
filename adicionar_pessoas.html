@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Jogadores</title>
+    <link rel="stylesheet" href="adicionar_pessoas.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Adicionar Jogadores</h1><br>
+    <form id="formJogadores">
+        <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador" required>
+        <button type="button" id="adicionarJogador">ADICIONAR</button>
+    </form>
+    <ul id="listaJogadores"></ul>
+    <div class="botao-container">
+        <button id="enviarJogadores">ENVIAR</button>
+        <button id="resetarLista">RESETAR LISTA</button>
+        <a href="index.html" class="botao">VOLTAR AO MENU</a>
+    </div>
+
+    <script>
+        // Recuperar jogadores e posições do localStorage
+        const jogadores = JSON.parse(localStorage.getItem('jogadores')) || [];
+        const posicoes = JSON.parse(localStorage.getItem('posicoes')) || Array(jogadores.length).fill(0);
+        const listaJogadores = document.getElementById('listaJogadores');
+        const nomeJogadorInput = document.getElementById('nomeJogador');
+        const adicionarJogadorBtn = document.getElementById('adicionarJogador');
+        const enviarJogadoresBtn = document.getElementById('enviarJogadores');
+        const resetarListaBtn = document.getElementById('resetarLista');
+
+        // Atualizar a lista de jogadores na interface
+        const atualizarLista = () => {
+            listaJogadores.innerHTML = ''; // Limpa a lista
+            jogadores.forEach((jogador, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${jogador} - Casa: ${posicoes[index]}`;
+                listaJogadores.appendChild(li);
+            });
+        };
+
+        // Adicionar jogador à lista
+        adicionarJogadorBtn.addEventListener('click', () => {
+            const nome = nomeJogadorInput.value.trim();
+            if (nome) {
+                jogadores.push(nome);
+                posicoes.push(0); // Adiciona a posição inicial (casa 0) para o novo jogador
+                atualizarLista();
+                nomeJogadorInput.value = ''; // Limpa o campo de entrada
+            } else {
+                alert('Digite um nome válido!');
+            }
+        });
+
+        // Enviar jogadores para o localStorage
+        enviarJogadoresBtn.addEventListener('click', () => {
+            if (jogadores.length > 0) {
+                localStorage.setItem('jogadores', JSON.stringify(jogadores));
+                localStorage.setItem('posicoes', JSON.stringify(posicoes));
+                alert('Jogadores adicionados com sucesso!');
+                window.location.href = 'gerardados.html'; // Redireciona para a página de gerar dados
+            } else {
+                alert('Adicione pelo menos um jogador!');
+            }
+        });
+
+        // Função para resetar a lista
+        resetarListaBtn.addEventListener('click', () => {
+            localStorage.removeItem('jogadores'); // Remove os jogadores do localStorage
+            localStorage.removeItem('posicoes'); // Remove as posições do localStorage
+            jogadores.length = 0; // Limpa o array local
+            posicoes.length = 0; // Limpa o array de posições
+            atualizarLista(); // Atualiza a interface
+            alert('Lista de jogadores resetada!');
+        });
+
+        // Atualiza a lista ao carregar a página
+        atualizarLista();
+    </script>
+</body>
+</html>
